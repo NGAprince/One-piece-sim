@@ -1,0 +1,2498 @@
+<html>
+<head>
+  
+  <title> Pirate Sim</title>
+  <script>
+    var canvas;
+    var ctx;
+    var capname;
+    var crewname;
+    var ship;
+    var captain;
+    var island;
+    var x;
+    var y;
+
+  window.onload = function()
+  {
+    var click = false;
+    canvas = document.getElementById("sea");
+    ctx = canvas.getContext("2d");
+    capname = window.prompt("Enter Captain name");
+    crewname = window.prompt("Enter Crew name");
+    ship = new PirateShip(crewname); //(crewname)
+    ship.crew.push(new Captain(capname, 3, 200, 200)); //(name)
+   
+    Draw();
+    ship.displayship();
+    ship.displayCrew();
+    island = new Island();
+    var AttackPressed = false
+    //narrator stuff
+    document.getElementById("3").disabled = true;
+    document.getElementById("2").disabled = true;
+    document.getElementById("4").disabled = true;
+    document.getElementById("footer").style.color = "white";
+    document.getElementById("log").style.color = "white";
+    document.getElementById("log").innerHTML = "MANY YEARS AGO, A LEGENDARY CREW OF PIRATES LED BY POWERFUL CAPTAIN HID THEIR TREASURE ON AN UNKNOWN ISLAND. LEGEND SAYS THAT THE PIRATE WHO OBTAIN THIS TREASURE WILL BE BESTOWED THE TITLE OF THE 'KING OF THE PIRATES'." + "<br>" + "GATHER CREW, FIGHT ENEMIES, EXPLORE NEW ISLANDS BECAUSE ONLY THOSE WHO HAVE THE STRENGTH AND EXPERIENCE WILL EARN THIS TITLE, " + capname + "!";
+    }
+
+  
+     
+    function PirateShip(crewname)
+    {
+      //stats of ship
+      this.crewname = crewname;
+      this.HP = 0;
+      this.XP = 0;
+      this.CP = 0;
+      this.crew = [];
+      this.stars = 0;
+      this.rank = 0;
+      this.FM = false;
+      
+     
+      //display ship image
+      this.displayship = function()
+       {
+
+         var shipImage = new Image();
+         shipImage.src = "ship%20(1).png";
+         shipImage.onload = function()
+        {
+         ctx.drawImage(shipImage, 200, 200, 100,100);
+        }
+       }
+      
+       //possible ally 
+      this.recruitReward = function()
+      {
+        var mem = Math.floor(Math.random() * 10) + 1;
+        if(mem == 1)
+        {
+          this.crew.push(new Reward("Doflamigo", 5, 290, 280))
+        }
+        if(mem == 2)
+        {
+          this.crew.push(new Reward("Kid", 5, 280, 280))
+        }
+        if(mem == 3)
+        {
+          this.crew.push(new Reward("Enel", 4, 280, 275))
+        }
+        if(mem == 4)
+        {
+          this.crew.push(new Reward("Crocodile", 4, 225, 200))
+        }
+        if(mem == 5)
+        {
+          this.crew.push(new Reward("Boa", 3, 225, 200))
+        }
+        if(mem == 6)
+        {
+          this.crew.push(new Reward("Smoker", 3, 220, 230))
+        }
+        if(mem == 7)
+        {
+          this.crew.push(new Reward("Arlong", 2, 170, 200))
+        }
+        if(mem == 8)
+        {
+          this.crew.push(new Reward("Robin", 2, 195, 150))
+        }
+        if(mem == 9)
+        {
+          this.crew.push(new Reward("Mihawk", 10, 590, 590))
+        }
+        if(mem == 10)
+        {
+          this.crew.push(new Reward("Caesar", 1, 210, 150))
+        }
+      }
+
+      //possible first mates
+      this.recruitFM = function()
+      {
+        
+        var mem = Math.floor(Math.random() * 10) + 1;
+        if(mem == 1)
+        {
+          this.crew.push(new FirstMate("Zoro", 5, 300, 300))
+        }
+        if(mem == 2)
+        {
+          this.crew.push(new FirstMate("Marco", 5, 300, 300))
+        }
+        if(mem == 3)
+        {
+          this.crew.push(new FirstMate("Katakuri", 4, 275, 250))
+        }
+        if(mem == 4)
+        {
+          this.crew.push(new FirstMate("Sabo", 4, 250, 250))
+        }
+        if(mem == 5)
+        {
+          this.crew.push(new FirstMate("Ace", 3, 225, 200))
+        }
+        if(mem == 6)
+        {
+          this.crew.push(new FirstMate("Jimbei", 4, 245, 250))
+        }
+        if(mem == 7)
+        {
+          this.crew.push(new FirstMate("Bepo", 2, 170, 150))
+        }
+        if(mem == 8)
+        {
+          this.crew.push(new FirstMate("Brooke", 2, 200, 200))
+        }
+        if(mem == 9)
+        {
+          this.crew.push(new FirstMate("Buggy", 1, 140, 160))
+        }
+        if(mem == 10)
+        {
+          this.crew.push(new FirstMate("Pedro", 1, 145, 150))
+        }
+      }
+      this.recruit = function()
+      {
+        var classm = Math.floor(Math.random() * 55) + 1;
+        var mem = Math.floor(Math.random() * 10) + 1;
+        
+        //Nav
+        if(classm <= 10 && mem == 1)
+        {
+          this.crew.push(new Nav("Nami", 5, 150, 100))
+        }
+        if(classm <= 10 && mem == 2)
+        {
+          this.crew.push(new Nav("Koby", 5, 215, 200))
+        }
+        if(classm <= 10 && mem == 3)
+        {
+          this.crew.push(new Nav("Bepo", 4, 170, 150))
+        }
+        if(classm <= 10 && mem == 4)
+        {
+          this.crew.push(new Nav("Laffitte", 4, 200, 190))
+        }
+        if(classm <= 10 && mem == 5)
+        {
+          this.crew.push(new Nav("Road", 3, 180, 100 ))
+        }
+        if(classm <= 10 && mem == 6)
+        {
+          this.crew.push(new Nav("Borodo", 3, 30, 10))
+        }
+        if(classm <= 10 && mem == 7)
+        {
+          this.crew.push(new Nav("Rasa", 2, 20, 10))
+        }
+        if(classm <= 10 && mem == 8)
+        {
+          this.crew.push(new Nav("Eddy", 2, 50, 10))
+        }
+        if(classm <= 10 && mem == 9)
+        {
+          this.crew.push(new Nav("Luffy", 1, 400, 400))
+        }
+        if(classm <= 10 && mem == 10)
+        {
+          this.crew.push(new Nav("Zoro", 1, 300, 300))
+        }
+        
+        //sniper
+        if(classm > 10 && classm <= 20 && mem == 1)
+        {
+          this.crew.push(new Sniper("Van Augar", 5, 275, 200))
+        }
+        if(classm > 10 && classm <= 20 && mem == 2)
+        {
+          this.crew.push(new Sniper("Yasopp", 5, 270, 200))
+        }
+        if(classm > 10 && classm <= 20 && mem == 3)
+        {
+          this.crew.push(new Sniper("Sniper King", 4, 210, 180))
+        }
+        if(classm > 10 && classm <= 20 && mem == 4)
+        {
+          this.crew.push(new Sniper("Izo", 4, 210, 200))
+        }
+         if(classm > 10 && classm <= 20 && mem == 5)
+        {
+          this.crew.push(new Sniper("Usopp", 3, 200, 175))
+        }
+        if(classm > 10 && classm <= 20 && mem == 6)
+        {
+          this.crew.push(new Sniper("Bege", 3, 205, 230))
+        }
+        if(classm > 10 && classm <= 20 && mem == 7)
+        {
+          this.crew.push(new Sniper("Rindo", 2, 140, 100))
+        }
+         if(classm > 10 && classm <= 20 && mem == 8)
+        {
+          this.crew.push(new Sniper("Trebol", 2, 190, 100))
+        }
+        if(classm > 10 && classm <= 20 && mem == 9)
+        {
+          this.crew.push(new Sniper("Wyper", 1, 80, 50))
+        }
+        if(classm > 10 && classm <= 20 && mem == 10)
+        {
+          this.crew.push(new Sniper("Curiel", 1, 40, 50))
+        }
+        
+        //cook
+        if(classm > 20 && classm <= 30 && mem == 1)
+        {
+          this.crew.push(new Cook("Sanji", 5, 300, 300))
+        }
+        if(classm > 20 && classm <= 30 && mem == 2)
+        {
+          this.crew.push(new Cook("Zeff", 5, 180, 150))
+        }
+        if(classm > 20 && classm <= 30 && mem == 3)
+        {
+          this.crew.push(new Cook("Streusen", 4, 180, 100))
+        }
+        if(classm > 20 && classm <= 30 && mem == 4)
+        {
+          this.crew.push(new Cook("Carmen", 4, 10, 10))
+        }
+        if(classm > 20 && classm <= 30 && mem == 5)
+        {
+          this.crew.push(new Cook("Pudding", 3, 125, 50))
+        }
+        if(classm > 20 && classm <= 30 && mem == 6)
+        {
+          this.crew.push(new Cook("Hatchan", 3, 140, 100))
+        }
+        if(classm > 20 && classm <= 30 && mem == 7)
+        {
+          this.crew.push(new Cook("Thatch", 2, 180, 150))
+        }
+        if(classm > 20 && classm <= 30 && mem == 8)
+        {
+          this.crew.push(new Cook("Cosette", 2, 5, 5))
+        }
+        if(classm > 20 && classm <= 30 && mem == 9)
+        {
+          this.crew.push(new Cook("Tajio", 1, 5, 1))
+        }
+        if(classm > 20 && classm <= 30 && mem == 10)
+        {
+          this.crew.push(new Cook("Jessica", 1, 5, 1))
+        }
+        
+        if(classm > 30 && classm <= 40 && mem == 1)
+        {
+          this.crew.push(new Doctor("Chopper", 5, 200, 210))
+        }
+        if(classm > 30 && classm <= 40 && mem == 2)
+        {
+          this.crew.push(new Doctor("Law", 5, 280, 250))
+        }
+        if(classm > 30 && classm <= 40 && mem == 3)
+        {
+          this.crew.push(new Doctor("Hogback", 4, 80, 20))
+        }
+        if(classm > 30 && classm <= 40 && mem == 4)
+        {
+          this.crew.push(new Doctor("Marco", 4, 300, 280))
+        }
+        if(classm > 30 && classm <= 40 && mem == 5)
+        {
+          this.crew.push(new Doctor("Dr Kureha", 3, 30, 40))
+        }
+        if(classm > 30 && classm <= 40 && mem == 6)
+        {
+          this.crew.push(new Doctor("Crocus", 3, 30, 30))
+        }
+        if(classm > 30 && classm <= 40 && mem == 7)
+        {
+          this.crew.push(new Doctor("Doc Q", 2, 200, 170))
+        }
+        if(classm > 30 && classm <= 40 && mem == 8)
+        {
+          this.crew.push(new Doctor("Night", 2, 150, 100))
+        }
+        if(classm > 30 && classm <= 40 && mem == 9)
+        {
+          this.crew.push(new Doctor("Hiriluk", 1, 30, 30))
+        }
+        if(classm > 30 && classm <= 40 && mem == 10)
+        {
+          this.crew.push(new Doctor("Wally", 1, 30, 20))
+        }
+        
+        if(classm > 40 && classm <= 50 && mem == 1)
+        {
+          this.crew.push(new ShipWright("Franky", 5, 210, 220))
+        }
+        if(classm > 40 && classm <= 50 && mem == 2)
+        {
+          this.crew.push(new ShipWright("Tom", 5, 190, 250))
+        }
+        if(classm > 40 && classm <= 50 && mem == 3)
+        {
+          this.crew.push(new ShipWright("Iceburg", 4, 50, 20))
+        }
+        if(classm > 40 && classm <= 50 && mem == 4)
+        {
+          this.crew.push(new ShipWright("Paulie", 4, 100, 100))
+        }
+        if(classm > 40 && classm <= 50 && mem == 5)
+        {
+          this.crew.push(new ShipWright("Den", 3, 50, 40))
+        }
+        if(classm > 40 && classm <= 50 && mem == 6)
+        {
+          this.crew.push(new ShipWright("Kaku", 3, 250, 250))
+        }
+        if(classm > 40 && classm <= 50 && mem == 7)
+        {
+          this.crew.push(new ShipWright("Rob Lucci", 2, 270, 300))
+        }
+        if(classm > 40 && classm <= 50 && mem == 8)
+        {
+          this.crew.push(new ShipWright("Stansen", 2, 150, 130))
+        }
+        if(classm > 40 && classm <= 50 && mem == 9)
+        {
+          this.crew.push(new ShipWright("Usopp", 1, 190, 150))
+        }
+        if(classm > 40 && classm <= 50 && mem == 10)
+        {
+          this.crew.push(new ShipWright("Gairam", 1, 130, 100))
+        }
+        //wild
+        if(classm > 50 && mem == 1)
+        {
+          this.crew.push(new Wildcard("Roger", 10, 600, 600))
+        }
+        if(classm > 50 && mem == 2)
+        {
+          this.crew.push(new Wildcard("Whitebeard", 10, 600, 600))
+        }
+        if(classm > 50 && mem == 3)
+        {
+          this.crew.push(new Wildcard("Shanks", 10, 590, 590))
+        }
+        if(classm > 50 && mem == 4)
+        {
+          this.crew.push(new Wildcard("Dragon", 10, 590, 590))
+        }
+        if(classm > 50 && mem == 5)
+        {
+          this.crew.push(new Wildcard("Kaido", 10, 590, 600))
+        }
+        if(classm > 50 && mem == 6)
+        {
+          this.crew.push(new Wildcard("Big Mom", 10, 590, 600))
+        }
+        if(classm > 50 && mem == 7)
+        {
+          this.crew.push(new Wildcard("Aokiji", 10, 580, 580))
+        }
+        if(classm > 50 && mem == 8)
+        {
+          this.crew.push(new Wildcard("Akainu", 10, 580, 590))
+        }
+        if(classm > 50 && mem == 9)
+        {
+          this.crew.push(new Wildcard("Kizaru", 10, 580, 570))
+        }
+        if(classm > 50 && mem == 10)
+        {
+          var luck = Math.floor(Math.random() * 2) + 1;
+          if(luck == 1)
+          {
+          this.crew.push(new Wildcard("Garp", 10, 600, 600))
+          }
+          if(luck == 2)
+          {
+            this.crew.push(new Wildcard("Luffy", 10, 400, 400))
+          }
+        }
+       
+        
+        
+      }
+      this.removeMember = function()
+      {
+        window.alert(lose)
+        var L = Math.floor(Math.random() * (this.crew.length - 2) + 2);
+        ship.crew.splice(L, L+1)
+      }
+        //displaying crew m
+      this.displayCrew = function() //reworked function
+      {
+        document.getElementById("footer").innerHTML = ""; //clear footer1
+        for(var count = 0; count < this.crew.length; count++)  //loop through crew array
+        {
+          if(this.crew[count].stars > 5)
+          {
+          var crewDetails = "-" + this.crew[count].class + ": " +this.crew[count].name + " "  + "S*" + " [CP: " + this.crew[count].CP + "]"+ " [HP: " + this.crew[count].HP + "]"+"<br>";
+          }
+          else
+          {
+          crewDetails = "-" + this.crew[count].class + ": " +this.crew[count].name + " " + this.crew[count].stars + "*" + " [CP: " + this.crew[count].CP + "]"+ " [HP: " + this.crew[count].HP +  "]"+ "<br>";
+          }
+          
+          document.getElementById("footer").innerHTML += crewDetails;
+          
+          
+          Draw();
+          //display crew member details
+        }
+      }
+    this.DrawXP = function()
+    {
+      ctx.font = "16px bold serif";
+      ctx.fillStyle = "yellow";
+      ctx.fillText(`Crew XP: ${this.XP}`, 200, 440);
+    }
+       
+    this.DrawHP = function()
+    {
+      ctx.font = "16px bold Arial";
+      ctx.fillStyle = "lightgreen";
+      ctx.fillText(`Crew HP: ${this.HP}`, 200, 460);
+    }
+       
+    this.DrawCP = function()
+    {
+      ctx.font = "16px bold Arial ";
+      ctx.fillStyle = "orange";
+      ctx.fillText(`Crew CP: ${this.CP}`, 200, 480);
+    }
+    
+    
+   
+
+      
+    this.DrawCrewStars = function()
+    {
+      ctx.font = "16px Arial";
+      ctx.fillStyle = "yellow";
+      ctx.fillText(this.crewname  + `: ${Math.ceil(this.rank) + "*"}`, 200, 400);
+    }
+  }
+
+
+   
+    
+    function Island()
+    {
+      this.PresentThreat = false;
+      //determines the level of possible enemies dependig on the current level of player
+        this.levels = function()
+        {
+          if(ship.CP <= 200)
+       {
+       this.stars = Math.floor(Math.random() * 3) + 1;
+       }
+       else if(ship.CP <= 400 && ship.CP >= 200)
+       {
+       this.stars =  Math.floor(Math.random() * (5 - 3) + 3);
+       }
+       else if(ship.CP <= 600 && ship.CP >= 400)
+       {
+       this.stars =  Math.floor(Math.random() * (5 - 4) + 4);
+       }
+       else if(ship.CP <= 800 && ship.CP >= 600)
+       {
+       this.stars = Math.floor(Math.random() * (6 - 5) + 5);
+       }
+       else if(ship.CP <= 1000 && ship.CP >= 800)
+       {
+        this.stars = Math.floor(Math.random() * (7 - 6) + 6);
+       }
+       else if(ship.CP <= 1200 && ship.CP >= 1000)
+       {
+       this.stars = Math.floor(Math.random() * (8 - 7) + 7);
+       }
+       else if(ship.CP <= 1400 && ship.CP >= 1200)
+       {
+       this.stars = Math.floor(Math.random() * (9 - 8) + 8);
+       }
+       else if(ship.CP <= 1600 && ship.CP >= 1400)
+       {
+       this.stars = Math.floor(Math.random() * (10 - 9) + 9);
+       }
+       else if(ship.CP <= 2000 && ship.CP >= 1600)
+       {
+       this.stars = Math.floor(Math.random() * (11 - 10) + 10);
+       }
+       else if(ship.CP <= 2500 && ship.CP >= 2000)
+       {
+       this.stars = Math.floor(Math.random() * (12 - 11) + 11);
+       }
+       else if(ship.CP <= 3000 && ship.CP >= 2500)
+       {
+       this.stars = Math.floor(Math.random() * (13 -12) + 12);
+       }
+       else if(ship.CP <= 3500 && ship.CP >= 3000)
+       {
+       this.stars = Math.floor(Math.random() * (14 - 13) + 13);
+       }
+       else if(ship.CP <= 4000 && ship.CP >= 3500)
+       {
+       this.stars = Math.floor(Math.random() * (15 - 14) + 14);
+       }
+      }
+
+      //the possible combat power of enemy depending on it's level or star rank
+      this.StatIsland = function()
+      {
+        if (this.stars == 1)
+        {
+          this.power = Math.floor(Math.random() * 100) + 50;
+        }
+        if (this.stars == 2)
+        {
+          this.power = Math.floor(Math.random() * 150) + 100;
+        }
+        if (this.stars == 3)
+        {
+          this.power = Math.floor(Math.random() * 200) + 150;
+        }
+        if (this.stars == 4)
+        {
+          this.power = Math.floor(Math.random() * 400) + 200;
+        }
+        if (this.stars == 5)
+        {
+          this.power = Math.floor(Math.random() * 600) + 400;
+        }
+        if (this.stars == 6)
+        {
+          this.power = Math.floor(Math.random() * 800) + 600;
+        }
+        if (this.stars == 7)
+        {
+          this.power = Math.floor(Math.random() * 1000) + 800;
+        }
+        if (this.stars == 8)
+        {
+          this.power = Math.floor(Math.random() * 1200) + 1000;
+        }
+        if (this.stars == 9)
+        {
+          this.power = Math.floor(Math.random() * 1400) + 1200;
+        }
+        if (this.stars == 10)
+        {
+          this.power = Math.floor(Math.random() * 1600) + 1400;
+        }
+        if (this.stars == 11)
+        {
+          this.power = Math.floor(Math.random() * 1800) + 1600;
+        }
+        if (this.stars == 12)
+        {
+          this.power = Math.floor(Math.random() * 2000) + 1800;
+        }
+        if (this.stars == 13)
+        {
+          this.power = Math.floor(Math.random() * 2500) + 2000;
+        }
+        if (this.stars == 14)
+        {
+          this.power = Math.floor(Math.random() * 3000) + 2500;
+         
+        }
+        if (this.stars == 15)
+        {
+          this.power = Math.floor(Math.random() * 3500) + 3000;
+         
+        }
+      }
+
+      //displays islands random image gen
+      this.displayIsland = function()
+      {
+        this.land = true
+        this.PresentThreat = true
+        ctx.clearRect(0,20,500,180);
+        var IslandImage = new Image();
+        var randomIsland = Math.floor(Math.random() * 6) + 1;
+        if(randomIsland == 1)
+        {
+        IslandImage.src = "Island%20(1).png";
+        IslandImage.onload = function()
+        {
+          ctx.drawImage(IslandImage, 160, 50, 175,150);
+        }
+        }
+        else if(randomIsland == 2)
+        {
+        IslandImage.src = "Island%20(1)%20(4).png";
+        IslandImage.onload = function()
+        {
+          ctx.drawImage(IslandImage, 160, 50, 175,150);
+        }
+        }
+        else if(randomIsland == 3)
+        {
+        IslandImage.src = "Island%20(1)%20(3).png";
+        IslandImage.onload = function()
+        {
+          ctx.drawImage(IslandImage, 160, 50, 175,150);
+        }
+        }
+        else if(randomIsland == 4)
+        {
+        IslandImage.src = "Island%20(1)%20(2).png";
+        IslandImage.onload = function()
+        {
+          ctx.drawImage(IslandImage, 160, 50, 175,150);
+        }
+        }
+        else if(randomIsland == 5)
+        {
+        IslandImage.src = "Island%20(1)%20(1).png";
+        IslandImage.onload = function()
+        {
+          ctx.drawImage(IslandImage, 160, 50, 175,150);
+        }
+        }
+        else if(randomIsland == 6)
+        {
+        IslandImage.src = "Island%20(1)%20(5).png";
+        IslandImage.onload = function()
+        {
+          ctx.drawImage(IslandImage, 160, 50, 175,150);
+        }
+        }
+        
+      }
+      this.displayEnemy = function()
+      {
+        this.land = false
+        island.PresentThreat = true
+        ctx.clearRect(0,20,500,180);
+        var NavyImage = new Image();
+        NavyImage.src = "ship%20(2).png";
+        NavyImage.onload = function()
+        {
+          ctx.drawImage(NavyImage, 200, 80, 100,100);
+        }
+       
+      }
+      
+      this.DrawThreatStars = function()
+    {
+      ctx.font = "16px Arial";
+      ctx.fillStyle = "red";
+      if(this.stars == 1)
+      {
+      ctx.fillText(`Threat: ${"D-"}`, 220, 20);
+      }
+      else if(this.stars == 2)
+      {
+      ctx.fillText(`Threat: ${"D"}`, 220, 20);
+      }
+      else if(this.stars == 3)
+      {
+      ctx.fillText(`Threat: ${"D+"}`, 220, 20);
+      }
+      else if(this.stars == 4)
+      {
+      ctx.fillText(`Threat: ${"C-"}`, 220, 20);
+      }
+      else if(this.stars == 5)
+      {
+      ctx.fillText(`Threat: ${"C"}`, 220, 20);
+      }
+      else if(this.stars == 6)
+      {
+      ctx.fillText(`Threat: ${"C+"}`, 220, 20);
+      }
+      else if(this.stars == 7)
+      {
+      ctx.fillText(`Threat: ${"B-"}`, 220, 20);
+      }
+      else if(this.stars == 8)
+      {
+      ctx.fillText(`Threat: ${"B"}`, 220, 20);
+      }
+      else if(this.stars == 9)
+      {
+      ctx.fillText(`Threat: ${"B+"}`, 220, 20);
+      }
+      else if(this.stars == 10)
+      {
+      ctx.fillText(`Threat: ${"A-"}`, 220, 20);
+      }
+      else if(this.stars == 11)
+      {
+      ctx.fillText(`Threat: ${"A"}`, 220, 20);
+      }
+      else if(this.stars == 12)
+      {
+      ctx.fillText(`Threat: ${"A+"}`, 220, 20);
+      }
+      else if(this.stars == 13)
+      {
+      ctx.fillText(`Threat: ${"S"}`, 220, 20);
+      }
+      else if(this.stars == 14)
+      {
+      ctx.fillText(`Threat: ${"SS"}`, 220, 20);
+      }
+      else if(this.stars == 15)
+      {
+      ctx.fillText(`Threat: ${"SSS"}`, 220, 20);
+      }
+    }
+    this.attackIsland = function()
+      {
+        AttackPressed = true
+        treasure.PresentTreasure = false;
+          if(this.power >= ship.CP)
+          {
+            document.getElementById("log").innerHTML = "";
+            document.getElementById("log").style.color = "red";
+            document.getElementById("log").innerHTML = "ATTACK FAILED";
+           
+            if(this.stars == 1)
+            {
+              ship.XP = ship.XP - 10;
+              ship.crew[0].check();
+              ship.HP = ship.HP - 20;
+              Draw();
+            }
+            else if(this.stars == 2)
+            {
+              ship.XP = ship.XP - 20;
+              ship.crew[0].check();
+              ship.HP = ship.HP - 40;
+              Draw();
+            }
+            else if(this.stars == 3)
+            {
+              ship.XP = ship.XP - 30;
+              ship.crew[0].check();
+              ship.HP = ship.HP - 60;
+              Draw();
+            }
+             else if(this.stars == 4)
+            {
+              ship.XP = ship.XP - 40;
+              ship.crew[0].check();
+              ship.HP = ship.HP - 80;
+              Draw();
+            }
+            else if(this.stars == 5)
+            {
+              ship.XP = ship.XP - 50;
+              ship.crew[0].check();
+              ship.HP = ship.HP - 100;
+              Draw();
+            }
+            else if(this.stars == 6)
+            {
+              ship.XP = ship.XP - 60;
+              ship.crew[0].check();
+              ship.HP = ship.HP - 120;
+              Draw();
+            }
+            else if(this.stars == 7)
+            {
+              ship.XP = ship.XP - 70;
+              ship.crew[0].check();
+              ship.HP = ship.HP - 140;
+              Draw();
+            }
+            else if(this.stars == 8)
+            {
+              ship.XP = ship.XP - 80;
+              ship.crew[0].check();
+              ship.HP = ship.HP - 160;
+              Draw();
+            }
+            else if(this.stars == 9)
+            {
+              ship.XP = ship.XP - 90;
+              ship.crew[0].check();
+              ship.HP = ship.HP - 180;
+              Draw();
+            }
+            else if(this.stars == 10)
+            {
+              ship.XP = ship.XP - 100;
+              ship.crew[0].check();
+              ship.HP = ship.HP - 200;
+              var lose = Math.floor(Math.random() * 2) + 1;
+              if(lose == 1)
+              {
+               ship.removeMember();
+              }
+              Draw();
+            }
+            else if(this.stars == 11)
+            {
+              ship.XP = ship.XP - 110;
+              ship.crew[0].check();
+              ship.HP = ship.HP - 220;
+              Draw();
+            }
+            else if(this.stars == 12)
+            {
+              ship.XP = ship.XP - 120;
+              ship.crew[0].check();
+              ship.HP = ship.HP - 240;
+              Draw();
+            }
+            else if(this.stars == 13)
+            {
+              ship.XP = ship.XP - 130;
+              ship.crew[0].check();
+              ship.HP = ship.HP - 260; 
+              Draw();
+            }
+            else if(this.stars == 14)
+            {
+              ship.XP = ship.XP - 140;
+              ship.crew[0].check();
+              ship.HP = ship.HP - 280;
+              Draw();
+            }
+            else if(this.stars == 15)
+            {
+              ship.XP = ship.XP - 150;
+              ship.crew[0].check();
+              ship.HP = ship.HP - 300;
+              Draw();
+            }
+            this.PresentThreat = false;
+          }
+          else if(this.power < ship.CP)
+          {
+            document.getElementById("log").innerHTML = ""
+            document.getElementById("log").style.color = "lightgreen"
+            document.getElementById("log").innerHTML = "ATTACK SUCCEED";
+            var alliance = Math.floor(Math.random() * 2) + 1;
+            if(this.stars == 1)
+            {
+              ship.XP = ship.XP + 10;
+              ship.crew[0].check();
+              Draw();
+            }
+            else if(this.stars == 2)
+            {
+              ship.XP = ship.XP + 20;
+              ship.crew[0].check();
+              ship.HP = ship.HP - 5
+              Draw();
+            }
+            else if(this.stars == 3)
+            {
+              ship.XP = ship.XP + 30;
+              ship.crew[0].check();
+              ship.HP = ship.HP - 10;
+              Draw();
+            }
+            else if(this.stars == 4)
+            {
+              ship.XP = ship.XP + 40;
+              ship.crew[0].check();
+               ship.HP = ship.HP - 15
+              Draw();
+            }
+            else if(this.stars == 5)
+            {
+              ship.XP = ship.XP + 50;
+              ship.crew[0].check();
+              ship.HP = ship.HP - 20
+              Draw();
+            }
+            else if(this.stars == 6)
+            {
+              ship.XP = ship.XP + 60;
+              ship.crew[0].check();
+               ship.HP = ship.HP - 25
+              Draw();
+            }
+            else if(this.stars == 7)
+            {
+              ship.XP = ship.XP + 70;
+              ship.crew[0].check();
+              if(ship.crew.length < 10 && alliance == 2)
+              {
+              ship.recruitReward();
+              ship.displayCrew();
+              document.getElementById("log").innerHTML = ""
+              document.getElementById("log").style.color = "lightgreen"
+              document.getElementById("log").innerHTML = "you formed an ALLIANCE with the Enemy and added them to your crew";
+              }
+               ship.HP = ship.HP - 30
+              Draw();
+            }
+            else if(this.stars == 8)
+            {
+              ship.XP = ship.XP + 80;
+              ship.crew[0].check();
+              ship.HP = ship.HP - 20;
+               ship.HP = ship.HP - 35
+               if(ship.crew.length < 10 && alliance == 2)
+              {
+              ship.recruitReward();
+              ship.displayCrew();
+              document.getElementById("log").innerHTML = ""
+              document.getElementById("log").style.color = "lightgreen"
+              document.getElementById("log").innerHTML = "you formed an ALLIANCE with the Enemy Ship and added them to your crew";
+              }
+              Draw();
+            }
+            else if(this.stars == 9)
+            {
+              ship.XP = ship.XP + 90;
+              ship.crew[0].check();
+              ship.HP = ship.HP - 40;
+              if(ship.crew.length < 10 && alliance == 2)
+              {
+              ship.recruitReward();
+              ship.displayCrew();
+              document.getElementById("log").innerHTML = ""
+              document.getElementById("log").style.color = "lightgreen"
+              document.getElementById("log").innerHTML = "you formed an ALLIANCE with the Enemy Ship and added them to your crew";
+              }
+              Draw();
+            }
+            else if(this.stars == 10)
+            {
+              ship.XP = ship.XP + 100;
+              ship.crew[0].check();
+              ship.HP = ship.HP - 45;
+              if(ship.crew.length < 10 && alliance == 2)
+              {
+              ship.recruitReward();
+              ship.displayCrew();
+              document.getElementById("log").innerHTML = ""
+              document.getElementById("log").style.color = "lightgreen"
+              document.getElementById("log").innerHTML = "you formed an ALLIANCE with the Enemy Ship and added them to your crew";
+              }
+              Draw();
+            }
+            else if(this.stars == 11)
+            {
+              ship.XP = ship.XP + 110;
+              ship.crew[0].check();
+              ship.HP = ship.HP - 50;
+              if(ship.crew.length < 10 && alliance == 2)
+              {
+              ship.recruitReward();
+              ship.displayCrew();
+              document.getElementById("log").innerHTML = ""
+              document.getElementById("log").style.color = "lightgreen"
+              document.getElementById("log").innerHTML = "you formed an ALLIANCE with the Enemy Ship and added them to your crew";
+              }
+              Draw();
+            }
+            else if(this.stars == 12)
+            {
+              ship.XP = ship.XP + 120;
+              ship.crew[0].check();
+              ship.HP = ship.HP - 55;
+              if(ship.crew.length < 10 && alliance == 2)
+              {
+              ship.recruitReward();
+              ship.displayCrew();
+              document.getElementById("log").innerHTML = ""
+              document.getElementById("log").style.color = "lightgreen"
+              document.getElementById("log").innerHTML = "you formed an ALLIANCE with the Enemy Ship and added them to your crew";
+              }
+              Draw();
+            }
+            else if(this.stars == 13)
+            {
+              ship.XP = ship.XP + 130;
+              ship.crew[0].check();
+              ship.HP = ship.HP - 60;
+              if(ship.crew.length < 10 && alliance == 2)
+              {
+              ship.recruitReward();
+              ship.displayCrew();
+              document.getElementById("log").innerHTML = ""
+              document.getElementById("log").style.color = "lightgreen"
+              document.getElementById("log").innerHTML = "you formed an ALLIANCE with the Enemy Ship and added them to your crew";
+              }
+              Draw();
+            }
+            else if(this.stars == 14)
+            {
+              ship.XP = ship.XP + 140;
+              ship.crew[0].check();
+              ship.HP = ship.HP - 65;
+              if(ship.crew.length < 10 && alliance == 2)
+              {
+              ship.recruitReward();
+              ship.displayCrew();
+              document.getElementById("log").innerHTML = ""
+              document.getElementById("log").style.color = "lightgreen"
+              document.getElementById("log").innerHTML = "you formed an ALLIANCE with the Enemy Ship and added them to your crew";
+              }
+              Draw();
+            }
+            else if(this.stars == 15)
+            {
+              ship.XP = ship.XP + 150;
+              ship.crew[0].check();
+              ship.HP = ship.HP - 70;
+              if(ship.crew.length < 10 && alliance == 2)
+              {
+              ship.recruitReward();
+              ship.displayCrew();
+              document.getElementById("log").innerHTML = ""
+              document.getElementById("log").style.color = "lightgreen"
+              document.getElementById("log").innerHTML = "you formed an ALLIANCE with the Enemy Ship and added them to your crew";
+              }
+              Draw();
+            }
+            this.PresentThreat = false;
+          }
+        }
+        
+      }
+    
+    AttackPressed = false
+    
+    var treasure = new TreasureIsland()
+    function TreasureIsland()
+    {
+      this.haveDfruit = false
+      this.chest = ["fruit", "XP", "HP", "XP", "weapons"];
+      this.PresentTreasure = false
+      this.winner = false
+      this.weapon;
+      this.fruit;
+      this.displayTreasure = function()
+      {
+        island.land = false
+        ctx.clearRect(0,20,500,180);
+        var ChestImage = new Image();
+        ChestImage.src = "chest%20(1).png";
+        ChestImage.onload = function()
+        {
+          ctx.drawImage(ChestImage, 200, 100, 100,100);
+        }
+      }
+      this.displayLegendChest = function()
+      {
+       
+        ctx.clearRect(0,20,500,180);
+        var LChestImage = new Image();
+        LChestImage.src = "Winner%20Chest%20(1).png";
+        LChestImage.onload = function()
+        {
+          ctx.drawImage(LChestImage, 200, 100, 100,100);
+        }
+      }
+
+      //pick a random element in array- if you can only get a weapon or fruit once
+      this.pickTreasure = function()
+      {
+        var picker = Math.floor(Math.random() * this.chest.length);
+        
+        if(this.chest[picker] == "fruit")
+        {
+          this.haveDfruit = true;
+          var ftype = Math.floor(Math.random() * 25) + 1;
+          ship.CP = ship.CP + 50;
+          ship.HP = ship.HP + 50;
+          if(ftype == 1)
+          {
+            document.getElementById("log").innerHTML = "";
+            document.getElementById("log").style.color = "yellow";
+            document.getElementById("log").innerHTML = "You found the OP-OP Fruit" + "<br>" + "allows its user to create a spherical space or 'room', where the user has complete control over the placement and orientation of the objects inside";
+            this.fruit = "Paramecia";
+            this.haveDfruit = true;
+            ship.crew[0].CP =  ship.crew[0].CP + 50;
+            Draw();
+            ship.displayCrew()
+          }
+          if(ftype == 2)
+          {
+            document.getElementById("log").innerHTML = "";
+            document.getElementById("log").style.color = "yellow";
+            document.getElementById("log").innerHTML = "You found the GUM-GUM FRUIT" + "<br>" + "Turns user's body into rubber and allow user to streth their body beyond human limits";
+            this.fruit = "Paramecia";
+            this.haveDfruit = true;
+            ship.crew[0].CP =  ship.crew[0].CP + 50;
+            Draw();
+            ship.displayCrew()
+            
+          }
+          
+          if(ftype == 3)
+          {
+            document.getElementById("log").innerHTML = "";
+            document.getElementById("log").style.color = "yellow";
+            document.getElementById("log").innerHTML = "You found the TREMOR-TREMOR Fruit:"  + "<br>" + "allows uses to create large scale vibrations";
+            this.haveDfruit = true;
+            ship.crew[0].CP =  ship.crew[0].CP + 50;
+            Draw();
+            ship.displayCrew()
+           
+          }
+          if(ftype == 4)
+          {
+            document.getElementById("log").innerHTML = "";
+            document.getElementById("log").style.color = "yellow";
+            document.getElementById("log").innerHTML = "You found the PRESS-PRESS Fruit:" + "<br>" + "allows user to create and manipulate gravitational forces";
+            this.haveDfruit = true;
+            ship.crew[0].CP =  ship.crew[0].CP + 50;
+            Draw();
+            ship.displayCrew()
+          }
+          if(ftype == 5)
+          {
+            document.getElementById("log").innerHTML = "";
+            document.getElementById("log").style.color = "yellow";
+            document.getElementById("log").innerHTML = "You found the STRING-STRING Fruit:"+ "<br>" + "allows user to create and manipulate strings";
+            ship.crew[0].CP =  ship.crew[0].CP + 50;
+            this.haveDfruit = true;
+            Draw();
+            ship.displayCrew()
+          }
+          if(ftype == 6)
+          {
+            document.getElementById("log").innerHTML = "";
+            document.getElementById("log").style.color = "yellow";
+            document.getElementById("log").innerHTML = "You found the MAGNET-MAGNET Fruit:"+ "<br>" + "allows user to generate magnetic fields able to push or pull metal objects";
+            ship.crew[0].CP =  ship.crew[0].CP + 50;
+            this.haveDfruit = true;
+            Draw();
+            ship.displayCrew()
+          }
+          if(ftype == 7)
+          {
+            document.getElementById("log").innerHTML = "";
+            document.getElementById("log").style.color = "yellow";
+            document.getElementById("log").innerHTML = "You found the FLAME-FLAME Fruit" + "<br>" + "allows user to create, control and transform into fire";
+            ship.crew[0].CP =  ship.crew[0].CP + 50;
+            Draw();
+            ship.displayCrew()
+          }
+          if(ftype == 8)
+          {
+            document.getElementById("log").innerHTML = "";
+            document.getElementById("log").style.color = "yellow";
+            document.getElementById("log").innerHTML = "You found the ICE-ICE Fruit"+ "<br>" + "allows user to create, control and transform into ice";
+            ship.crew[0].CP =  ship.crew[0].CP + 50;
+            this.haveDfruit = true;
+            Draw();
+            ship.displayCrew()
+          }
+          if(ftype == 9)
+          {
+            document.getElementById("log").innerHTML = "";
+            document.getElementById("log").style.color = "yellow";
+            document.getElementById("log").innerHTML = "You found the MAGMA-MAGMA Fruit"+ "<br>" + "allows user to create, control and transform into magma";
+            ship.crew[0].CP =  ship.crew[0].CP + 50;
+            this.haveDfruit = true;
+            Draw();
+            ship.displayCrew()
+          }
+          if(ftype == 10)
+          {
+            document.getElementById("log").innerHTML = "";
+            document.getElementById("log").style.color = "yellow";
+            document.getElementById("log").innerHTML = "You found the SAND-SAND Fruit"+ "<br>" + "allows user to create, control and transform into sand";
+            ship.crew[0].CP =  ship.crew[0].CP + 50;
+            Draw();
+            ship.displayCrew()
+          }
+          if(ftype == 11)
+          {
+            document.getElementById("log").innerHTML = "";
+            document.getElementById("log").style.color = "yellow";
+            document.getElementById("log").innerHTML = "You found the RUMBLE-RUMBLE Fruit"+ "<br>" + "allows user to create, control and transform into electricity";
+            ship.crew[0].CP =  ship.crew[0].CP + 50;
+            Draw();
+            ship.displayCrew()
+          }
+          if(ftype == 12)
+          {
+            document.getElementById("log").innerHTML = "";
+            document.getElementById("log").style.color = "yellow";
+            document.getElementById("log").innerHTML = "You found the BARRIER-BARRIER Fruit" + "<br>" + "allow user to generate barriers"
+            ship.crew[0].CP =  ship.crew[0].CP + 50;
+            this.haveDfruit = true;
+            Draw();
+            ship.displayCrew()
+          }
+          if(ftype == 13)
+          {
+            document.getElementById("log").innerHTML = "";
+            document.getElementById("log").style.color = "yellow";
+            document.getElementById("log").innerHTML = "You found the BIRD-BIRD Fruit (PHOENIX)"+ "<br>" + "allows user to transform fully or partially into a phoenix";
+            ship.crew[0].CP =  ship.crew[0].CP + 50;
+            this.haveDfruit = true;
+            Draw();
+            ship.displayCrew()
+          }
+          if(ftype == 14)
+          {
+            document.getElementById("log").innerHTML = "";
+            document.getElementById("log").style.color = "yellow";
+            document.getElementById("log").innerHTML = "You found the FISH-FISH Fruit (DRAGON)"+ "<br>" + "allows user to transform fully or partially into a east asian dragon";
+            ship.crew[0].CP =  ship.crew[0].CP + 50;
+            this.haveDfruit = true;
+            Draw();
+            ship.displayCrew()
+          }
+          if(ftype == 15)
+          {
+            document.getElementById("log").innerHTML = "";
+            document.getElementById("log").style.color = "yellow";
+            document.getElementById("log").innerHTML = "You found the CAT-CAT Fruit (SABRE TOOTH TIGER)"+ "<br>" + "allows user to transform fully or partially into a sabre tooth tiger";
+            ship.crew[0].CP =  ship.crew[0].CP + 50;
+            this.haveDfruit = true;
+            Draw();
+            ship.displayCrew()
+          }
+          if(ftype == 16)
+          {
+            document.getElementById("log").innerHTML = "";
+            document.getElementById("log").style.color = "yellow";
+            document.getElementById("log").innerHTML = "You found a CAT-CAT Fruit (LEOPARD)" + "<br>" + "allows user to transform fully or partially into a leopard";
+            ship.crew[0].CP =  ship.crew[0].CP + 50;
+            this.haveDfruit = true;
+            Draw();
+            ship.displayCrew()
+          }
+          if(ftype == 17)
+          {
+            document.getElementById("log").innerHTML = "";
+            document.getElementById("log").style.color = "yellow";
+            document.getElementById("log").innerHTML = "You found a BIRD-BIRD Fruit (HAWK)" + "<br>" + "allows user to transform fully or partially into a hawk";
+            ship.crew[0].CP =  ship.crew[0].CP + 50;
+            this.haveDfruit = true;
+            Draw();
+            ship.displayCrew()
+          }
+          if(ftype == 18)
+          {
+            document.getElementById("log").innerHTML = "";
+            document.getElementById("log").style.color = "yellow";
+            document.getElementById("log").innerHTML = "You found a GAS-GAS Fruit" + "<br>" + "allows user to create, manipulate and transform into chemical gas";
+            ship.crew[0].CP =  ship.crew[0].CP + 50;
+            this.haveDfruit = true;
+            Draw();
+            ship.displayCrew()
+          }
+          if(ftype == 19)
+          {
+            document.getElementById("log").innerHTML = "";
+            document.getElementById("log").style.color = "yellow";
+            document.getElementById("log").innerHTML = "You found a SHADOW-SHADOW Fruit" + "<br>" + "allows the user to interact with and manipulate human souls";
+            ship.crew[0].CP =  ship.crew[0].CP + 50;
+            this.haveDfruit = true;
+            Draw();
+            ship.displayCrew()
+          }
+          if(ftype == 20)
+          {
+            document.getElementById("log").innerHTML = "";
+            document.getElementById("log").style.color = "yellow";
+            document.getElementById("log").innerHTML = "You found a SOUL-SOUL Fruit" + "<br>" + " gives the user the ability to manifest and control shadows";
+            ship.crew[0].CP =  ship.crew[0].CP + 50;
+            this.haveDfruit = true;
+            Draw();
+            ship.displayCrew()
+          }
+          if(ftype == 21)
+          {
+            document.getElementById("log").innerHTML = "";
+            document.getElementById("log").style.color = "yellow";
+            document.getElementById("log").innerHTML = "You found a WOOD-WOOD Fruit" + "<br>" + "allows the user to create, control and transform into wood at will";
+            ship.crew[0].CP =  ship.crew[0].CP + 50;
+            this.haveDfruit = true;
+            Draw();
+            ship.displayCrew()
+          }
+          if(ftype == 22)
+          {
+            document.getElementById("log").innerHTML = "";
+            document.getElementById("log").style.color = "yellow";
+            document.getElementById("log").innerHTML = "You found a HUMAN-HUMAN Fruit(DAIBUTSU)" + "<br>" + " allows its user to transform into a Daibutsu (a giant gold Buddha) at will.";
+            ship.crew[0].CP =  ship.crew[0].CP + 50;
+            this.haveDfruit = true;
+            Draw();
+            ship.displayCrew()
+          }
+          if(ftype == 23)
+          {
+            document.getElementById("log").innerHTML = "";
+            document.getElementById("log").style.color = "yellow";
+            document.getElementById("log").innerHTML = "You found a ARMS-ARMS Fruit" + "<br>" + "Allows users to transform their bodies into weapons of any kind";
+            ship.crew[0].CP =  ship.crew[0].CP + 50;
+            this.haveDfruit = true;
+            Draw();
+            ship.displayCrew()
+          }
+          if(ftype == 24)
+          {
+            document.getElementById("log").innerHTML = "";
+            document.getElementById("log").style.color = "yellow";
+            document.getElementById("log").innerHTML = "You found a ELEPHANT-ELEPHANT Fruit" + "<br>" + "Allows the user to become a mammoth or a half-mammoth hybrid";
+            ship.crew[0].CP =  ship.crew[0].CP + 50;
+            this.haveDfruit = true;
+            Draw();
+            ship.displayCrew()
+          }
+          if(ftype == 25)
+          {
+            document.getElementById("log").innerHTML = "";
+            document.getElementById("log").style.color = "yellow";
+            document.getElementById("log").innerHTML = "You found a SMOKE-SMOKE Fruit" + "<br>" + "allows the user to create, control, and transform into smoke at will";
+            ship.crew[0].CP =  ship.crew[0].CP + 50;
+            this.haveDfruit = true;
+            Draw();
+            ship.displayCrew()
+          }
+          this.chest.shift();
+          island.PresentThreat = false;
+         
+        }
+        
+        else if(this.chest[picker] == "weapons")
+        {
+          var Wtype = Math.floor(Math.random() * 8) + 1;
+          if(Wtype == 1)
+          {
+            document.getElementById("log").innerHTML = "";
+            document.getElementById("log").style.color = "yellow";
+            document.getElementById("log").innerHTML = "You found the Great Blade, MURAKUMOGIRI";
+            this.weapon = "Murakumogiri"
+            ship.CP = ship.CP + 50;
+            ship.HP = ship.HP + 50;
+            ship.crew[0].CP =  ship.crew[0].CP + 50;
+            Draw();
+            ship.displayCrew()
+           
+          }
+          if(Wtype == 2)
+          {
+            document.getElementById("log").innerHTML = "";
+            document.getElementById("log").style.color = "yellow";
+            document.getElementById("log").innerHTML = "You found the Great Blade, ACE";
+            this.weapon = "Ace";
+            ship.CP = ship.CP + 50;
+          ship.HP = ship.HP + 50;
+            ship.crew[0].CP =  ship.crew[0].CP + 50;
+            Draw();
+            ship.displayCrew()
+          }
+          if(Wtype == 3)
+          {
+            document.getElementById("log").innerHTML = "";
+            document.getElementById("log").style.color = "yellow";
+            document.getElementById("log").innerHTML = "You found the Great Blade, YORU";
+            this.weapon = "Yoru";
+            ship.CP = ship.CP + 50;
+          ship.HP = ship.HP + 50;
+            ship.crew[0].CP =  ship.crew[0].CP + 50;
+            Draw();
+            ship.displayCrew()
+          }
+          if(Wtype == 4)
+          {
+            document.getElementById("log").innerHTML = "";
+            document.getElementById("log").style.color = "yellow";
+            document.getElementById("log").innerHTML = "You found the Great Blade, ENMA";
+            this.weapon = "Enma";
+            ship.CP = ship.CP + 25;
+          ship.HP = ship.HP + 25;
+            ship.crew[0].CP =  ship.crew[0].CP + 25;
+            Draw();
+            ship.displayCrew()
+          }
+          if(Wtype == 5)
+          {
+            document.getElementById("log").innerHTML = "";
+            document.getElementById("log").style.color = "yellow";
+            document.getElementById("log").innerHTML = "You found the Great Blade, SHUSUI";
+            this.weapon = "Shisui";
+            ship.CP = ship.CP + 25;
+          ship.HP = ship.HP + 25;
+            ship.crew[0].CP =  ship.crew[0].CP + 25;
+            Draw();
+            ship.displayCrew()
+  
+          }
+          if(Wtype == 6)
+          {
+            document.getElementById("log").innerHTML = "";
+            document.getElementById("log").style.color = "yellow";
+            document.getElementById("log").innerHTML = "You found the Great Blade, GRYPHON";
+            this.weapon = "Gryphon";
+            ship.CP = ship.CP + 25;
+            ship.HP = ship.HP + 25;
+            ship.crew[0].CP =  ship.crew[0].CP + 25;
+            Draw();
+            ship.displayCrew()
+          }
+          if(Wtype == 7)
+          {
+            document.getElementById("log").innerHTML = "";
+            document.getElementById("log").style.color = "yellow";
+            document.getElementById("log").innerHTML = "You found the Great Blade, MONGURA";
+            this.weapon = "Mongura";
+            ship.CP = ship.CP + 25;
+          ship.HP = ship.HP + 25;
+            ship.crew[0].CP =  ship.crew[0].CP + 25;
+            Draw();
+            ship.displayCrew()
+          }
+          if(Wtype == 8)
+          {
+            document.getElementById("log").innerHTML = "";
+            document.getElementById("log").style.color = "yellow";
+            document.getElementById("log").innerHTML = "You found the Great Blade, KIKOKU";
+            ship.CP = ship.CP + 25;
+            ship.HP = ship.HP + 25;
+            this.weapon = "Kikoku"
+            ship.crew[0].CP =  ship.crew[0].CP + 25;
+            Draw();
+            ship.displayCrew()
+          }
+          this.chest.pop();
+        }
+         else if(this.chest[picker] == "XP")
+         {
+          var money = Math.floor(Math.random() * 4) + 1;
+
+          if(money == 1)
+          {
+           ship.XP = ship.XP + 25
+           document.getElementById("log").innerHTML = "";
+            document.getElementById("log").style.color = "yellow";
+            document.getElementById("log").innerHTML = "You found 25 XP";
+           Draw();
+          }
+          if(money == 2)
+          {
+           ship.XP = ship.XP + 50
+           document.getElementById("log").innerHTML = "";
+            document.getElementById("log").style.color = "yellow";
+            document.getElementById("log").innerHTML = "You found 50 XP";
+           Draw();
+          }
+          if(money == 3)
+          {
+           ship.XP = ship.XP + 75
+           document.getElementById("log").innerHTML = "";
+            document.getElementById("log").style.color = "yellow";
+            document.getElementById("log").innerHTML = "You found 75 XP";
+           Draw();
+          }
+          if(money == 4)
+          {
+           ship.XP = ship.XP + 100
+           document.getElementById("log").innerHTML = "";
+            document.getElementById("log").style.color = "yellow";
+            document.getElementById("log").innerHTML = "You found 100 XP";
+           Draw();
+          }
+
+         }
+         else if(this.chest[picker] == "HP")
+         {
+          var money = Math.floor(Math.random() * 4) + 1;
+          if(money == 1)
+          {
+           ship.HP = ship.HP + 25
+           document.getElementById("log").innerHTML = "";
+            document.getElementById("log").style.color = "yellow";
+            document.getElementById("log").innerHTML = "You found 25 HP";
+           Draw();
+          }
+          if(money == 2)
+          {
+           ship.HP = ship.HP + 50
+           document.getElementById("log").innerHTML = "";
+            document.getElementById("log").style.color = "yellow";
+            document.getElementById("log").innerHTML = "You found 25 HP";
+           Draw();
+          }
+          if(money == 3)
+          {
+           ship.HP = ship.HP + 75
+           document.getElementById("log").innerHTML = "";
+            document.getElementById("log").style.color = "yellow";
+            document.getElementById("log").innerHTML = "You found 25 HP";
+           Draw();
+          }
+          if(money == 4)
+          {
+           ship.HP = ship.HP + 100
+           document.getElementById("log").innerHTML = "";
+            document.getElementById("log").style.color = "yellow";
+            document.getElementById("log").innerHTML = "You found 25 HP";
+           Draw();
+          }
+         }
+      }
+    }
+    function Class(name, stars, CP, HP)
+    {
+      this.name = name;
+      this.stars = stars;
+      this.CP = CP;
+      this.HP = HP
+      ship.CP = this.CP + ship.CP;
+      ship.HP = this.HP + ship.HP;
+      
+      //calc rank of ship
+      ship.stars = ship.stars + this.stars ;
+      ship.rank = ship.stars/ship.crew.length;
+      if(ship.rank >= 5)
+      {
+        ship.rank = "S"
+      }
+      if(ship.rank > 6)
+      {
+        ship.rank = ship.rank
+      }
+      Draw();
+    }
+
+    function Captain(name, stars, CP, HP)
+    {
+      Class.call(this, name, stars, CP, HP);
+      this.class = "Captain";
+      this.name = name;
+      this.stars = stars;
+      this.CP = CP
+      //use to avoid power ups from repeating
+      this.Pu1 = false
+      this.Pu2 = false
+      this.Pu3 = false
+      this.Pu4 = false
+      this.Pu5 = false 
+      this.Pu6 = false 
+      this.check = function()
+      {
+      if(ship.XP >= 200 && this.Pu1 == false)
+      {
+        document.getElementById("log").innerHTML = "";
+        document.getElementById("log").style.color = "orange";
+        document.getElementById("log").innerHTML = "*Power UP: You learnt ROKUSHIKI*" + "<br>" + "Rokushiki is a special, superhuman martial arts style"
+        this.CP = this.CP + 25;
+        this.HP = this.HP + 25;
+        ship.CP = ship.CP + 25;
+        ship.HP = ship.HP + 25;
+        ship.displayCrew()
+        this.Pu1 = true;
+      }
+      
+      if(ship.XP >= 300 && this.Pu2 == false)
+      {
+        document.getElementById("log").innerHTML = "";
+        document.getElementById("log").style.color = "orange";
+        document.getElementById("log").innerHTML = "*Power UP: You learnt ARMAMENT HAKI*" + "<br>" + "Armament Haki allows the user to coat their body, either in parts or entirely, in an invisible type of armor that possesses both offensive and defensive capabilities."
+        this.CP = this.CP + 25;
+        this.CP = this.CP + 50;
+        this.HP = this.HP + 50;
+        ship.CP = ship.CP + 50;
+        ship.HP = ship.HP + 50;
+        ship.displayCrew();
+         this.Pu2 = true;
+      }
+      if(ship.XP >= 400 && this.Pu3 == false)
+      {
+        document.getElementById("log").innerHTML = "";
+        document.getElementById("log").style.color = "orange";
+        document.getElementById("log").innerHTML = "*Power UP: You learnt OBSERVATIONAL HAKI*" + "<br>" + "Observational Haki allows the user to see the near future and sense incoming dangers"
+        this.CP = this.CP + 50;
+        this.HP = this.HP + 50;
+        ship.CP = ship.CP + 50;
+        ship.HP = ship.HP + 50;
+        ship.displayCrew();
+         this.Pu3 = true;
+      }
+      if(ship.XP >= 500 && this.Pu4 == false)
+      {
+        document.getElementById("log").innerHTML = "";
+        document.getElementById("log").style.color = "orange";
+        document.getElementById("log").innerHTML = "*Power UP: You learnt CONQUEROR'S HAKI*" + "<br>" + "The Conqueror's Haki allows the user to intimidate or knockout a weaker opponent by exerting their willpower onto them"
+        this.CP = this.CP + 100;
+        this.HP = this.HP + 100;
+        ship.CP = ship.CP + 100;
+        ship.HP = ship.HP + 100;
+        this.stars = this.stars + 1;
+        ship.displayCrew();
+         this.Pu4 = true;
+      }
+      if(ship.XP >= 600 && this.Pu5 == false)
+      {
+        document.getElementById("log").innerHTML = "";
+        document.getElementById("log").style.color = "orange";
+        document.getElementById("log").innerHTML = "*Power UP: You MASTERED ALL 3 HAKI*" + "<br>" + "you now have enough experince with all 3 forms of Haki that you officially mastered it"
+        this.CP = this.CP + 100;
+        this.HP = this.HP + 100;
+        ship.CP = ship.CP + 100;
+        ship.HP = ship.HP + 100;
+        this.stars = this.stars + 1;
+        ship.displayCrew();
+        this.Pu5 = true;
+      }
+      if(ship.XP >= 650 && treasure.haveDfruit == true && this.Pu6 == false)
+      {
+        document.getElementById("log").innerHTML = "";
+        document.getElementById("log").style.color = "orange";
+        document.getElementById("log").innerHTML = "*You have AWAKENED YOUR DEVIL FRUIT*" + "<br>" + "Awakened Devil Fruits start affecting the surroundings of the user and make them much stronger."
+        this.CP = this.CP + 100;
+        this.CP = this.CP + 100;
+        this.HP = this.HP + 100;
+        ship.CP = ship.CP + 100;
+        ship.HP = ship.HP + 100;
+        this.stars = this.stars + 1;
+        ship.displayCrew();
+        this.Pu6 = true;
+      }
+      }
+    }
+    function FirstMate(name, stars, CP, HP)
+    {
+      Class.call(this, name, stars, CP, HP);
+      this.class = "First Mate";
+      this.trait = "";
+      document.getElementById("log").innerHTML = ""
+        document.getElementById("log").style.color = "yellow"
+       document.getElementById("log").innerHTML = this.name + " joined your crew";
+    }
+    function Nav(name, stars, CP, HP)
+    {
+      Class.call(this, name, stars, CP, HP);
+      this.class = "Navigator";
+      this.trait = "";
+      document.getElementById("log").innerHTML = ""
+        document.getElementById("log").style.color = "yellow"
+       document.getElementById("log").innerHTML = this.name + " joined your crew";
+    }
+    function Sniper(name, stars, CP, HP)
+    {
+      Class.call(this, name, stars, CP, HP);
+      this.class = "Sniper";
+      this.trait = "";
+      document.getElementById("log").innerHTML = ""
+        document.getElementById("log").style.color = "yellow"
+       document.getElementById("log").innerHTML = this.name + " joined your crew";
+    }
+    function Cook(name, stars, CP, HP,)
+    {
+      Class.call(this, name, stars, CP, HP);
+      this.class = "Cook";
+      this.trait = "";
+      document.getElementById("log").innerHTML = ""
+        document.getElementById("log").style.color = "yellow"
+       document.getElementById("log").innerHTML = this.name + " joined your crew";
+      }
+    function Doctor(name, stars, CP, HP)
+    {
+      Class.call(this, name, stars, CP, HP);
+      this.class = "Doctor";
+      this.trait = "";
+      document.getElementById("log").innerHTML = ""
+        document.getElementById("log").style.color = "yellow"
+       document.getElementById("log").innerHTML = this.name + " joined your crew";
+    }
+    function ShipWright(name, stars, CP, HP)
+    {
+      Class.call(this, name, stars, CP, HP);
+      this.class = "Shipwright";
+      this.trait = "";
+      document.getElementById("log").innerHTML = ""
+        document.getElementById("log").style.color = "yellow"
+       document.getElementById("log").innerHTML = this.name + " joined your crew";
+    }
+    function Wildcard(name, stars, CP, HP)
+    {
+      Class.call(this, name, stars, CP, HP);
+      this.class = "Wildcard";
+      document.getElementById("log").innerHTML = ""
+        document.getElementById("log").style.color = "yellow"
+       document.getElementById("log").innerHTML = this.name + " joined your crew";
+    }
+    function Reward(name, stars, CP, HP)
+    {
+      Class.call(this, name, stars, CP, HP);
+      this.class = "Ally";
+      document.getElementById("log").innerHTML = ""
+        document.getElementById("log").style.color = "yellow"
+       document.getElementById("log").innerHTML = this.name + " joined your crew";
+    }
+    
+    function MoveButton()
+    {
+      ship.rank = ship.stars/ship.crew.length;
+      var foundChest = false;
+      document.getElementById("2").disabled = false;
+      
+      //disabled the recruit button
+      document.getElementById("3").disabled = false;
+          document.getElementById("4").disabled = false;
+     //if there is a threat on the screen
+      if(island.PresentThreat == true && foundChest == false && treasure.PresentTreasure == false && island.land == false)
+      {
+        var random = Math.floor(Math.random() * 3) + 1;
+        if (island.stars == 1 && foundChest == false)
+        {
+          ship.HP = ship.HP - 5;
+          document.getElementById("log").innerHTML = "";
+           document.getElementById("log").style.color = "red";
+        document.getElementById("log").innerHTML = "You lost 5HP from FLEEING";
+          island.PresentThreat = false;
+        }
+        if (island.stars == 2 && foundChest == false)
+        {
+          ship.HP = ship.HP - 10;
+          document.getElementById("log").innerHTML = "";
+           document.getElementById("log").style.color = "red";
+        document.getElementById("log").innerHTML = "You lost 10HP from FLEEING";
+          island.PresentThreat = false;
+        }
+        else if (island.stars == 3 && foundChest == false)
+        {
+        ship.HP = ship.HP - 15;
+        document.getElementById("log").innerHTML = "";
+           document.getElementById("log").style.color = "red";
+        document.getElementById("log").innerHTML = "You lost 15HP from FLEEING";
+        island.PresentThreat = false;
+        }
+        if (island.stars == 4 && foundChest == false )
+        {
+           ship.HP = ship.HP - 20;
+           document.getElementById("log").innerHTML = "";
+           document.getElementById("log").style.color = "red";
+        document.getElementById("log").innerHTML = "You lost 20HP from FLEEING";
+        island.PresentThreat = false;
+        }
+        if (island.stars == 5 && foundChest == false)
+        {
+        ship.HP = ship.HP - 25;
+        document.getElementById("log").innerHTML = "";
+           document.getElementById("log").style.color = "red";
+        document.getElementById("log").innerHTML = "You lost 25HP from FLEEING";
+        island.PresentThreat = false;
+        }
+        if (island.stars == 6 && foundChest == false)
+        {
+        ship.HP = ship.HP - 30;
+        document.getElementById("log").innerHTML = "";
+           document.getElementById("log").style.color = "red";
+        document.getElementById("log").innerHTML = "You lost 30HP from FLEEING";
+        island.PresentThreat = false;
+        }
+        if (island.stars == 7 && foundChest == false)
+        {
+        ship.HP = ship.HP - 35;
+        document.getElementById("log").innerHTML = "";
+           document.getElementById("log").style.color = "red";
+        document.getElementById("log").innerHTML = "You lost 35HP from FLEEING";
+        island.PresentThreat = false;
+        }
+        if (island.stars == 8 && foundChest == false)
+        {
+        ship.HP = ship.HP - 40;
+        document.getElementById("log").innerHTML = "";
+           document.getElementById("log").style.color = "red";
+        document.getElementById("log").innerHTML = "You lost 40HP from FLEEING";
+        island.PresentThreat = false;
+        }
+        if (island.stars == 9 && foundChest == false)
+        {
+        ship.HP = ship.HP - 45;
+        document.getElementById("log").innerHTML = "";
+           document.getElementById("log").style.color = "red";
+        document.getElementById("log").innerHTML = "You lost 45HP from FLEEING";
+        island.PresentThreat = false;
+        }
+        if (island.stars == 10 && foundChest == false)
+        {
+        document.getElementById("log").innerHTML = "";
+           document.getElementById("log").style.color = "red";
+        document.getElementById("log").innerHTML = "You cannnot run away from this enemy";
+        island.PresentThreat = true;
+        }
+        if (island.stars == 11 && foundChest == false)
+        {
+        document.getElementById("log").innerHTML = "";
+           document.getElementById("log").style.color = "red";
+        document.getElementById("log").innerHTML = "You cannnot run away from this enemy";
+        island.PresentThreat = true;
+        }if (island.stars == 12 && foundChest == false)
+        {
+        document.getElementById("log").innerHTML = "";
+           document.getElementById("log").style.color = "red";
+        document.getElementById("log").innerHTML = "You cannnot run away from this enemy";
+        island.PresentThreat = true;
+        }
+        if (island.stars == 14 && foundChest == false)
+        {
+        document.getElementById("log").innerHTML = "";
+           document.getElementById("log").style.color = "red";
+        document.getElementById("log").innerHTML = "You cannnot run away from this enemy";
+        island.PresentThreat = true;
+        }
+        if (island.stars == 15 && foundChest == false)
+        {
+        document.getElementById("log").innerHTML = "";
+           document.getElementById("log").style.color = "red";
+        document.getElementById("log").innerHTML = "You cannnot run away from this enemy";
+        island.PresentThreat = true;
+        }
+      }
+      if(island.PresentThreat == true && foundChest == false && treasure.PresentTreasure == false && island.land == true)
+      {
+        island.PresentThreat = false;
+      }
+      
+      else if (island.PresentThreat == false && foundChest == false)
+      {
+        var random = Math.floor(Math.random() * 3) + 1;
+      if(random == 1  && foundChest == false)
+      {
+        island.levels();
+        island.StatIsland();
+        document.getElementById("3").disabled = false;
+        document.getElementById("4").disabled = false;
+        document.getElementById("log").innerHTML = "";
+        document.getElementById("log").style.color = "red";
+        document.getElementById("log").innerHTML = "You approached a NEW ISLAND";
+        island.PresentThreat = true;
+        island.displayIsland();
+        ctx.clearRect(200, 7, 100, 30);
+        island.DrawThreatStars();
+      }
+      if(random == 2  && foundChest == false)
+      {
+        island.levels();
+        island.StatIsland();
+        document.getElementById("3").disabled = true;
+        document.getElementById("4").disabled = true;
+        document.getElementById("log").innerHTML = "";
+        document.getElementById("log").style.color = "red";
+        document.getElementById("log").innerHTML = "An ENEMY SHIP has approached you";
+        island.PresentThreat = false;
+        island.displayEnemy();
+        ctx.clearRect(200, 7, 100, 30);
+        island.DrawThreatStars();
+      }
+      if(random == 3 && foundChest == false)
+      {
+        document.getElementById("3").disabled = true;
+        document.getElementById("4").disabled = true;
+        document.getElementById("log").innerHTML = "";
+        document.getElementById("log").style.color = "yellow";
+        document.getElementById("log").innerHTML = "You found a TREASURE CHEST";
+          treasure.displayTreasure();
+          treasure.PresentTreasure = true;
+          ctx.clearRect(200, 7, 100, 30);
+      }
+      
+    }
+    if(ship.XP >= 1000)
+    {
+      foundChest = true;
+    }
+
+    if(foundChest == true)
+    {
+      document.getElementById("1").disabled = true;
+      document.getElementById("2").disabled = true;
+      document.getElementById("3").disabled = true;
+      document.getElementById("4").disabled = true;
+      island.PresentThreat = false;
+      ctx.clearRect(0,20,500,180);
+      var WinnerImage = new Image();
+         WinnerImage.src = "Winner%20Chest%20(1)%20(1).png";
+         WinnerImage.onload = function()
+        {
+         ctx.drawImage(WinnerImage,  200, 100, 100,100);
+        } 
+        document.getElementById("log").innerHTML = "";
+        document.getElementById("log").style.color = "yellow";
+        document.getElementById("log").innerHTML = "YOU FOUND THE LENGENDARY TREASURE THAT WAS HIDDEN FOR DECADES! INSIDE IS TREASURE BEYOND YOUR WILDEST DREAMS BUT MORE IMPORTANTLY YOU AND YOUR CREW WILL GO DOWN AS ONE OF THE GREATEST PIRATE CREW IN HISTORY AND YOU WILL BE KNOWN AS THE 'KING OF THE PIRATES!"
+        + "<br>"+ "LONG LIVE " + capname 
+  }
+  else if(ship.HP <= 0)
+      {
+        island.PresentThreat = false;
+        foundChest = true;
+        document.getElementById("1").disabled = true;
+        document.getElementById("2").disabled = true;
+        document.getElementById("3").disabled = true;
+        document.getElementById("4").disabled = true;
+        ctx.clearRect(0,0,500,500);
+        var drownImage = new Image();
+         drownImage.src = "dead.png";
+         drownImage.onload = function()
+        {
+         ctx.drawImage(drownImage, 200, 220, 100,100);
+        }
+        ctx.closePath();
+        document.getElementById("log").innerHTML = "";
+        document.getElementById("log").style.color = "red";
+        document.getElementById("log").innerHTML = "MANY STORIES ARE HIDDEN UNDERNEATH THESE DARK WATERS AND MANY GOOD PIRATES WITH GREAT POTENTIAL SLEEP BENEATH THE CRUEL AND DEEP SEA" + "<br>" + "MAY STORY OF " + capname + ", THE LEGEND WHO COULD HAVE BEEN, BE TOLD TO ALL THAT ARE WILLING TO HEAR IT"
+      }
+  if(ship.crew.length == 10 )
+      {
+        document.getElementById("3").disabled = true;
+      }
+      if(ship.XP <= 0)
+      {
+        ship.XP = 0;
+        Draw();
+      }
+
+}
+
+
+function Jobs()
+{
+  var matXP = 0
+  var matHP = 0
+  var matCP = 0
+for(var job = 1; job < 10; job++)
+{
+  if(ship.crew[job].class == "Doctor")
+  {
+    if(ship.crew[job].stars == 1)
+        {
+          ship.HP = ship.HP + 10
+          ship.crew[job].trait = "+10HP";
+          matHP = matHP + 10
+          Draw();
+        }
+    if(ship.crew[job].stars == 2)
+        {
+          ship.HP = ship.HP + 20
+          ship.crew[job].trait = "+20HP";
+          matHP = matHP + 20
+          Draw();
+        }
+    if(ship.crew[job].stars == 3)
+        {
+          ship.HP = ship.HP + 30
+          ship.crew[job].trait = "+30HP";
+          matHP = matHP + 30
+          Draw();
+        }
+      if(ship.crew[job].stars == 4)
+        {
+          ship.HP = ship.HP + 40
+          ship.crew[job].trait = "+40HP";
+          matHP = matHP + 40
+          Draw();
+        }
+      if(ship.crew[job].stars == 5)
+        {
+          ship.HP = ship.HP + 50
+          matHP = matHP + 50
+          if(ship.crew[job].name == "Law")
+          {
+          ship.crew[job].CP = ship.crew[job].CP + 10;
+          ship.crew[job].HP = ship.crew[job].HP + 10;
+          ship.displayCrew();
+          ship.HP = ship.HP + 50
+          ship.CP = ship.CP + 10
+          ship.HP = ship.HP + 10
+          matCP = matCP + 10;
+          matHP = matHP + 10;
+          matHP = matHP + 50
+          }
+          Draw();
+        }
+        document.getElementById("4").disabled = true;
+  }
+  else if(ship.crew[job].class == "Cook")
+  {
+    if(ship.crew[job].stars == 1)
+        {
+          ship.HP = ship.HP + 5
+          ship.XP = ship.XP + 5
+          ship.crew[job].trait = "+5HP, +5XP"
+          matHP = matHP + 5
+          matXP = matXP + 5
+          Draw();
+        }
+    if(ship.crew[job].stars == 2)
+        {
+          ship.HP = ship.HP + 10
+          ship.XP = ship.XP + 10
+          ship.crew[job].trait = "+10HP, +10XP"
+          matHP = matHP + 10
+          matXP = matXP + 10
+          Draw();
+        }
+    if(ship.crew[job].stars == 3)
+        {
+          ship.HP = ship.HP + 15
+          ship.XP = ship.XP + 15
+          ship.crew[job].trait = "+15HP, +15XP"
+          matHP = matHP + 15
+          matXP = matXP + 15
+          Draw();
+        }
+      if(ship.crew[job].stars == 4)
+        {
+          ship.HP = ship.HP + 20
+          ship.XP = ship.XP + 20
+          ship.crew[job].trait = "+20HP, +20XP"
+          matHP = matHP + 20
+          matXP = matXP + 20
+          Draw();
+        }
+      if(ship.crew[job].stars == 5)
+        {
+          ship.HP = ship.HP + 25
+          ship.XP = ship.XP + 25
+          ship.crew[job].trait = "+25HP, +25XP"
+          matHP = matHP + 25
+          matXP = matXP + 25
+        if(ship.crew[job].name = "Sanji")
+      {
+         
+          ship.crew[job].CP = ship.crew[job].CP + 10;
+          ship.crew[job].HP = ship.crew[job].HP + 10;
+          ship.displayCrew();
+          ship.HP = ship.HP + 25
+          ship.XP = ship.XP + 25
+          ship.CP = ship.CP + 10
+          ship.HP = ship.HP + 10
+          matCP = matCP + 10;
+          matHP = matHP + 10;
+          matHP = matHP + 25
+          matXP = matXP + 25
+        
+          Draw();
+      }
+          Draw();
+        }
+      
+        document.getElementById("4").disabled = true;
+}
+else if(ship.crew[job].class == "Shipwright")
+  {
+    if(ship.crew[job].stars == 1)
+        {
+          ship.HP = ship.HP + 5
+          ship.CP = ship.CP + 5
+          ship.crew[job].trait = "+5HP, +5CP"
+          matHP = matHP + 5;
+          matCP = matCP + 5;
+          Draw();
+        }
+    if(ship.crew[job].stars == 2)
+        {
+          ship.HP = ship.HP + 10
+          ship.CP = ship.CP + 10
+          ship.crew[job].trait = "+10HP, +10CP"
+          matHP = matHP + 10;
+          matCP = matCP + 5;
+          Draw();
+        }
+    if(ship.crew[job].stars == 3)
+        {
+          ship.HP = ship.HP + 15
+          ship.CP = ship.CP + 15
+          ship.crew[job].trait = "+15HP, +15CP"
+          matHP = matHP + 15;
+          matCP = matCP + 15;
+          Draw();
+        }
+      if(ship.crew[job].stars == 4)
+        {
+          ship.HP = ship.HP + 20
+          ship.CP = ship.CP + 20
+          ship.crew[job].trait = "+20HP, +20CP"
+          matHP = matHP + 20;
+          matCP = matCP + 20;
+          Draw();
+        }
+      if(ship.crew[job].stars == 5)
+        {
+          ship.HP = ship.HP + 25
+          ship.CP = ship.CP + 25
+          ship.crew[job].trait = "+25HP, +25CP"
+          matHP = matHP + 25;
+          matCP = matCP + 25;
+          Draw();
+        }
+        document.getElementById("4").disabled = true;
+}
+  else if(ship.crew[job].class == "Navigator")
+  {
+    if(ship.crew[job].stars == 1)
+        {
+          ship.XP = ship.XP + 1
+          ship.crew[job].trait = "+1XP"
+          matXP = matXP + 1;
+          Draw();
+        }
+    if(ship.crew[job].stars == 2)
+        {
+          ship.XP = ship.XP + 10
+          ship.crew[job].trait = "+10XP";
+          matXP = matXP + 10;
+          Draw();
+        }
+    if(ship.crew[job].stars == 3)
+        {
+          ship.XP = ship.XP + 20
+          ship.crew[job].trait = "+20XP";
+          matXP = matXP + 20;
+          Draw();
+        }
+      if(ship.crew[job].stars == 4)
+        {
+          ship.XP = ship.XP + 30
+          ship.crew[job].trait = "+30XP";
+          matXP = matXP + 30;
+          Draw();
+        }
+      if(ship.crew[job].stars == 5)
+        {
+          ship.XP = ship.XP + 50
+          ship.crew[job].trait = "+50XP";
+          matXP = matXP + 50;
+          if(ship.crew[job].name = "Koby")
+          {
+            ship.crew[job].CP = ship.crew[job].CP + 10;
+          ship.crew[job].HP = ship.crew[job].HP + 10;
+          ship.displayCrew();
+          ship.XP = ship.XP + 50
+          ship.CP = ship.CP + 10
+          ship.HP = ship.HP + 10
+          matCP = matCP + 10;
+          matHP = matHP + 10;
+          matXP = matXP + 50
+          }
+          Draw();
+        }
+        document.getElementById("4").disabled = true;
+}
+else if(ship.crew[job].class == "Sniper")
+  {
+    if(ship.crew[job].stars == 1)
+        {
+          ship.CP = ship.CP + 5
+          matCP = matCP + 5
+          Draw();
+        }
+    if(ship.crew[job].stars == 2)
+        {
+          ship.CP = ship.CP + 10
+          matCP = matCP + 10
+          Draw();
+        }
+    if(ship.crew[job].stars == 3)
+        {
+          ship.CP = ship.CP + 15
+          matCP = matCP + 15
+          Draw();
+        }
+      if(ship.crew[job].stars == 4)
+        {
+          ship.CP = ship.CP + 20
+          matCP = matCP + 20
+          Draw();
+        }
+      if(ship.crew[job].stars == 5)
+        {
+          ship.CP = ship.CP + 25
+          matCP = matCP + 25
+          Draw();
+        }
+        document.getElementById("4").disabled = true;
+}
+else if(ship.crew[job].class == "Ally")
+  {
+  if(ship.crew[job].stars == 1)
+        {
+          ship.crew[job].CP = ship.crew[job].CP + 2;
+          ship.crew[job].HP = ship.crew[job].HP + 2;
+          ship.CP = ship.CP + 2
+          ship.HP = ship.HP + 2
+          matCP = matCP + 2;
+          matHP = matHP + 2;
+          ship.displayCrew();
+        Draw();       
+       }
+    if(ship.crew[job].stars == 2)
+        {
+            ship.crew[job].CP = ship.crew[job].CP + 4;
+          ship.crew[job].HP = ship.crew[job].HP + 4;
+          ship.CP = ship.CP + 4
+          ship.HP = ship.HP + 4
+          matCP = matCP + 4;
+          matHP = matHP + 4;
+          ship.displayCrew();
+        Draw();
+        }
+    if(ship.crew[job].stars == 3)
+        {
+            ship.crew[job].CP = ship.crew[job].CP + 6;
+          ship.crew[job].HP = ship.crew[job].HP + 6;
+          ship.CP = ship.CP + 6
+          ship.HP = ship.HP + 6
+          matCP = matCP + 6;
+          matHP = matHP + 6;
+          ship.displayCrew();
+        Draw();        }
+      if(ship.crew[job].stars == 4)
+        {
+            ship.crew[job].CP = ship.crew[job].CP + 8;
+          ship.crew[job].HP = ship.crew[job].HP + 8;
+          ship.CP = ship.CP + 8
+          ship.HP = ship.HP + 8
+          matCP = matCP + 8;
+          matHP = matHP + 8;
+          ship.displayCrew();
+        Draw();        }
+      if(ship.crew[job].stars == 5)
+        {
+            ship.crew[job].CP = ship.crew[job].CP + 10;
+          ship.crew[job].HP = ship.crew[job].HP + 10;
+          ship.CP = ship.CP + 10
+          ship.HP = ship.HP + 10
+          matCP = matCP + 10
+          matHP = matHP + 10
+          ship.displayCrew();
+        Draw();        
+      }
+        document.getElementById("4").disabled = true;
+      }
+else if(ship.crew[job].class == "First Mate")
+  {
+  if(ship.crew[job].stars == 1)
+        {
+          ship.crew[job].CP = ship.crew[job].CP + 2;
+          ship.crew[job].HP = ship.crew[job].HP + 2;
+          ship.CP = ship.CP + 2
+          ship.HP = ship.HP + 2
+          matCP = matCP + 2
+          matHP = matHP + 2
+          ship.displayCrew();
+          Draw();
+        }
+    if(ship.crew[job].stars == 2)
+        {
+          ship.crew[job].CP = ship.crew[job].CP + 4;
+          ship.crew[job].HP = ship.crew[job].HP + 4;
+          ship.CP = ship.CP + 4
+          ship.HP = ship.HP + 4
+          matCP = matCP + 4
+          matHP = matHP + 4
+          ship.displayCrew();
+          Draw();
+        }
+    if(ship.crew[job].stars == 3)
+        {
+          ship.crew[job].CP = ship.crew[job].CP + 6;
+          ship.crew[job].HP = ship.crew[job].HP + 6;
+          ship.CP = ship.CP + 6
+          ship.HP = ship.HP + 6
+          matCP = matCP + 6
+          matHP = matHP + 6
+          ship.displayCrew();
+          Draw();
+        }
+      if(ship.crew[job].stars == 4)
+        {
+            ship.crew[job].CP = ship.crew[job].CP + 8;
+          ship.crew[job].HP = ship.crew[job].HP + 8;
+          ship.CP = ship.CP + 8
+          ship.HP = ship.HP + 8
+          matCP = matCP + 8
+          matHP = matHP + 8
+          ship.displayCrew();
+          Draw();
+        }
+      if(ship.crew[job].stars == 5)
+        {
+            ship.crew[job].CP = ship.crew[job].CP + 10;
+          ship.crew[job].HP = ship.crew[job].HP + 10;
+          ship.CP = ship.CP + 10
+          ship.HP = ship.HP + 10
+          matCP = matCP + 10;
+          matHP = matHP + 10;
+          ship.displayCrew();
+         Draw();
+        }
+  
+        document.getElementById("4").disabled = true;
+      }
+      
+
+      else if(ship.crew[job].class == "Wildcard")
+       {
+          ship.crew[0].CP = ship.crew[0].CP + 5;
+          ship.crew[0].HP = ship.crew[0].HP + 5;
+          ship.CP = ship.CP + 5
+          ship.HP = ship.HP + 5
+          matCP = matCP + 5
+          matHP = matHP + 5
+          ship.crew[job].trait = "+2CP, +2HP"
+          Draw();
+          if(ship.crew[job].name == "Luffy")
+          {
+          ship.crew[0].CP = ship.crew[0].CP + 5;
+          ship.crew[0].HP = ship.crew[0].HP + 5;
+          ship.crew[job].CP = ship.crew[job].CP + 10;
+          ship.crew[job].HP = ship.crew[job].HP + 10;
+          ship.displayCrew();
+          ship.CP = ship.CP + 5
+          ship.HP = ship.HP + 5
+          ship.CP = ship.CP + 10
+          ship.HP = ship.HP + 10
+          matCP = matCP + 10
+          matHP = matHP + 10
+          Draw();
+          }
+        ship.displayCrew();
+        Draw();
+        document.getElementById("4").disabled = true;
+      }
+      document.getElementById("log").innerHTML = ""
+document.getElementById("log").style.color = "lightgreen"
+document.getElementById("log").innerHTML = "REPORT: +" + matXP + "XP, +" + matHP + "HP, +" + matCP + "CP";
+Draw();
+}
+
+ship.displayCrew();
+}
+
+
+
+    function RecruitButton()
+    {
+      if(ship.FM == false)
+      {
+        ship.recruitFM();
+        ship.displayCrew();
+        ship.FM = true;
+      }
+      else if(ship.FM == true)
+      {
+        ship.recruit();
+        ship.displayCrew();
+      }
+      if(ship.crew.length == 10)
+      {
+        document.getElementById("3").disabled = true;
+      }
+      document.getElementById("3").disabled = true;
+      ship.rank = ship.stars/ship.crew.length;
+      
+    }
+  
+
+    function AttackorLoot()
+    {
+      if(island.PresentThreat == true)
+      {
+        island.attackIsland();
+      }
+      else if(treasure.PresentTreasure == true)
+      {
+        treasure.pickTreasure();
+        treasure.PresentTreasure == false;
+      }
+      ship.crew[0].check();
+      document.getElementById("2").disabled = true;
+    }
+    
+    if(ship.crew.length == 10)
+      {
+        document.getElementById("3").disabled = true;
+      }
+
+    function Draw()
+    {
+      ctx.clearRect(0, 350, 500, 250);
+      ship.DrawXP();
+      ship.DrawHP();
+      ship.DrawCP();
+      ship.DrawCrewStars();
+    }
+  
+</script>
+<style>
+ * {
+        color: white;
+        border-color: yellow ;
+        padding: 0;
+        margin: 0;
+        background-color: rgb(65, 57, 179);
+        background-size: 650px;
+      }
+  canvas {
+    background: rgb(58, 58, 243);
+    display: block;
+    text-align: center;
+    margin: 0 auto;
+    border-color: black;
+    border-style: solid;
+    border-style: outset;
+    border-width: 5px;
+  }
+  h1{
+    color: rgb(217, 255, 0);
+    text-align: center;
+    font-family: cursive;
+    text-align: center;
+    padding: 3px;
+    font-size: 50px;
+  }
+  
+  .buttons {
+  border: 2px;
+  background-color: blue;
+  color: white;
+  padding: 15px 32px;
+  text-align: center;
+  text-decoration: none;
+  font-size: 16px;
+}
+
+#1{
+  border-color:white;
+}
+  #footer{
+    text-align: center;
+    font-family:monospace;
+  }
+  #log{
+    text-align: center;
+    font-family: fantasy;
+  }
+</style>
+</head>
+<body>
+  <h1>ONE PIECE</h1>
+  
+
+ <canvas id="sea" width="500" height="500">  </canvas>
+  </body>
+  <div id = "log">
+  </div>
+  <div class = buttons>
+  <input id = "1" type = "button" value = "Flee To Next Island" onclick = "MoveButton()">
+  <input id = "2" type = "button" value = "Attack Island/Open Treasure Chest" onclick = "AttackorLoot()">
+  <input id = "3" type = "button" value = "Recruit a New Crewmate" onclick = "RecruitButton()">
+  <input id = "4" type = "button" value = "Crew Maintenance" onclick = "Jobs()">
+
+  </div>
+<div id= "footer"></div>
+</body>
+</html>
